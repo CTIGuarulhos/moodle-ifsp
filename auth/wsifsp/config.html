@@ -1,0 +1,56 @@
+<?php
+
+// set to defaults if undefined
+if (!isset($config->host)) {
+    $config->host = 'http://ws.ifsp.edu.br/servicoAutenticarLDAP';
+}
+if (!isset($config->changepasswordurl)) {
+    $config->changepasswordurl = '';
+}
+
+?>
+<table cellspacing="0" cellpadding="5" border="0">
+
+<tr valign="top" class="required">
+    <td align="right"><label for="host"><?php print_string('auth_wsifsphost_key', 'auth_wsifsp') ?>: </label></td>
+    <td>
+        <input name="host" id="host" type="text" size="50" value="<?php echo $config->host ?>" />
+        <?php
+
+        if (isset($err['host'])) {
+            echo $OUTPUT->error_text($err['host']);
+        }
+
+        ?>
+    </td>
+    <td>
+        <?php
+
+        print_string('auth_wsifsphost', 'auth_wsifsp');
+        print_string('auth_multiplehosts', 'auth');
+
+        ?>
+    </td>
+</tr>
+
+<tr valign="top">
+    <td align="right"><label for="changepasswordurl"><?php print_string('auth_wsifspchangepasswordurl_key', 'auth_wsifsp') ?>: </label></td>
+    <td>
+        <input name="changepasswordurl" id="changepasswordurl" type="text" value="<?php echo $config->changepasswordurl ?>" />
+        <?php
+
+        if (isset($err['changepasswordurl'])) {
+            echo $OUTPUT->error_text($err['changepasswordurl']);
+        }
+
+        ?>
+    </td>
+    <td><?php print_string('changepasswordhelp', 'auth') ?></td>
+</tr>
+
+<?php
+
+print_auth_lock_options($this->authtype, $user_fields, get_string('auth_fieldlocks_help', 'auth'), false, false);
+
+?>
+</table>

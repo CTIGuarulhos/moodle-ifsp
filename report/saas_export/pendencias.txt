@@ -1,0 +1,37 @@
+- não funciona a remoção de mapeamento de cursos-ofertas disciplinas na versão 2.0
+
+- como serão as permissões para quem vai exportar
+
+OK (três permissões: view, config, export)   - talvez duas permissões distintas, para configurar e outra para mapear e exportar
+   - definir em nível global? tem como definir em outro contexto?
+
+OK (aparece em branco) - algumas ofertas de disciplinas (antigas) pode não ter data de início e fim
+
+- novo plugin via atualização de versão (upgrade)
+
+OK (deve ser tratado pelo pessoal do SAAS) - problemas de duplicação de dados (cadastradas manualmente ou via csv e depois via plugin)
+
+OK    - usar sobrenome e idnumber como opção para cpf
+
+OK    - incluir cpf (custom fields) com opção de identificador de usuário
+
+OK    - incluir 0 (zeros) à esquerda no caso de cpf como identificador a usuário  (str_pad left)
+
+
+-----------------------------------------------------------------------------------------
+Resultado de conversa com equipe saas em 29/08
+
+OK (independente) - utilizar POST em vez de PUT
+OK - enviar pessoas uma a uma em vez de lote, incluindo data do último acesso (a ser definido na especificação do WS)
+
+OK    - opção de configuração (check box) que mapeia "enrol suspended" para evadido
+
+OK    - no caso de usuários "suspended", ignorar completamente
+OK    - no caso de enrol "suspended",  enviar estudante->of.disc somente se opção "enrol suspended para evadido" estiver marcada, com situação 'evadido'.
+        Ignorar em caso contrário
+OK    - não considerar o início e fim de um enrol
+
+OK    - enviar nota final na ofer.disc (curso) junto com a assoc do estudante com oferta-disciplina
+
+OK    - na terça-feira será definido o que será feito com os logs.
+        talvez o plugin receba uma URL indicando onde o gerente pode ver o relatório de ocorrências.

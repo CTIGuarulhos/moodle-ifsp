@@ -1,0 +1,66 @@
+/* Portal Padrao CSS
+-------------------------*/
+h2 {
+    border-top: 4px solid #00510f !important;
+    color: #00510f !important;
+    margin: 0 !important;
+    padding: 8px 8px 24px 10px !important;
+    border-bottom: none !important;
+    background: rgba(238,239,241,1);
+    font-weight: normal !important;
+    font-family: Arial,sans-serif !important;
+    margin-bottom: 1em !important;
+}
+
+.block {
+    min-height: 20px;
+    padding: 19px;
+    padding: 0 0 8px 0;
+    margin-bottom: 20px;
+    background-color: #FFF !important;
+    border: none !important;
+}
+
+#footer-brasil {
+   background: none repeat scroll 0% 0% #00420c;
+   padding: 1em 0px;
+   max-width: 100%;
+}
+
+footer {
+	color:#fff;
+}
+
+#page-content {
+    padding-top: 14px;
+}
+
+#page {
+    padding-top: 40px;
+}
+
+.breadcrumb {
+    background-color: #00420c;
+}
+
+
+.breadcrumb>li {
+    text-shadow:none;
+}
+
+
+ul.breadcrumb a {
+    color: #fff;
+}
+
+ul.breadcrumb a:hover {
+       text-decoration: underline;      
+}
+
+header {
+	padding-top:0px;
+}
+
+header#page-header {
+	padding: 5px;
+}

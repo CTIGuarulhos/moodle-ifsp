@@ -1,0 +1,36 @@
+.nav.tab > li {
+    display: inline-block;
+    margin-right: 10px;
+}
+
+dl.oneline {
+    border: 1px solid #e3e3e3;
+    border-radius: 5px;
+    padding: 10px;
+}
+
+dl.oneline > dt, dl.oneline > dd {
+    display: inline-block;
+}
+
+/*.log OL { counter-reset: item }*/
+/*.log LI { display: block }*/
+/*.log LI:before { content: counters(item, ".") " "; counter-increment: item }*/
+
+.log OL { list-style: none }
+
+.as_row {
+  display: block;
+}
+
+.disabled {
+  color: silver;
+}
+
+.jah_associado {
+  color: red;
+}
+
+.jah_associado:before {
+  content: "(JÁ ASSOCIADO) ";
+}

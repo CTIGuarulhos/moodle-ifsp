@@ -120,12 +120,16 @@ class renderer_base {
                              'userdate' => array($userdatehelper, 'transform'),
                          );
 
-            $this->mustache = new Mustache_Engine(array(
+            $this->mustache = new \core\output\mustache_engine(array(
                 'cache' => $cachedir,
                 'escape' => 's',
                 'loader' => $loader,
                 'helpers' => $helpers,
-                'pragmas' => [Mustache_Engine::PRAGMA_BLOCKS]));
+                'pragmas' => [Mustache_Engine::PRAGMA_BLOCKS],
+                // Don't allow the JavaScript helper to be executed from within another
+                // helper. If it's allowed it can be used by users to inject malicious
+                // JS into the page.
+                'blacklistednestedhelpers' => ['js']));
 
         }
 
@@ -2799,8 +2803,8 @@ EOD;
             $output .= $this->header();
         }
 
-        $message = '<p class="errormessage">' . $message . '</p>'.
-                '<p class="errorcode"><a href="' . $moreinfourl . '">' .
+        $message = '<p class="errormessage">' . s($message) . '</p>'.
+                '<p class="errorcode"><a href="' . s($moreinfourl) . '">' .
                 get_string('moreinformation') . '</a></p>';
         if (empty($CFG->rolesactive)) {
             $message .= '<p class="errormessage">' . get_string('installproblem', 'error') . '</p>';
@@ -4031,10 +4035,10 @@ EOD;
     }
 
     /**
-     * Returns the URL for the favicon.
+     * Returns the moodle_url for the favicon.
      *
      * @since Moodle 2.5.1 2.6
-     * @return string The favicon URL
+     * @return moodle_url The moodle_url for the favicon
      */
     public function favicon() {
         return $this->image_url('favicon', 'theme');

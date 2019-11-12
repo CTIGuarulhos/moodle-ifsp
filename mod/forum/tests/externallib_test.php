@@ -1691,6 +1691,92 @@ class mod_forum_external_testcase extends externallib_advanced_testcase {
         }
     }
 
+    /**
+     * Test add_discussion_post and auto subscription to a discussion.
+     */
+    public function test_add_discussion_post_subscribe_discussion() {
+        global $USER;
+
+        $this->resetAfterTest(true);
+
+        self::setAdminUser();
+
+        $user = self::getDataGenerator()->create_user();
+        $admin = get_admin();
+        // Create course to add the module.
+        $course = self::getDataGenerator()->create_course(array('groupmode' => VISIBLEGROUPS, 'groupmodeforce' => 0));
+
+        $this->getDataGenerator()->enrol_user($user->id, $course->id);
+
+        // Forum with tracking off.
+        $record = new stdClass();
+        $record->course = $course->id;
+        $forum = self::getDataGenerator()->create_module('forum', $record);
+        $cm = get_coursemodule_from_id('forum', $forum->cmid, 0, false, MUST_EXIST);
+
+        // Add discussions to the forums.
+        $record = new stdClass();
+        $record->course = $course->id;
+        $record->userid = $admin->id;
+        $record->forum = $forum->id;
+        $discussion1 = self::getDataGenerator()->get_plugin_generator('mod_forum')->create_discussion($record);
+        $discussion2 = self::getDataGenerator()->get_plugin_generator('mod_forum')->create_discussion($record);
+
+        // Try to post as user.
+        self::setUser($user);
+        // Enable auto subscribe discussion.
+        $USER->autosubscribe = true;
+        // Add a discussion post in a forum discussion where the user is not subscribed (auto-subscribe preference enabled).
+        mod_forum_external::add_discussion_post($discussion1->firstpost, 'some subject', 'some text here...');
+
+        $posts = mod_forum_external::get_forum_discussion_posts($discussion1->id);
+        $posts = external_api::clean_returnvalue(mod_forum_external::get_forum_discussion_posts_returns(), $posts);
+        // We receive the discussion and the post.
+        $this->assertEquals(2, count($posts['posts']));
+        // The user should be subscribed to the discussion after adding a discussion post.
+        $this->assertTrue(\mod_forum\subscriptions::is_subscribed($user->id, $forum, $discussion1->id, $cm));
+
+        // Disable auto subscribe discussion.
+        $USER->autosubscribe = false;
+        $this->assertTrue(\mod_forum\subscriptions::is_subscribed($user->id, $forum, $discussion1->id, $cm));
+        // Add a discussion post in a forum discussion where the user is subscribed (auto-subscribe preference disabled).
+        mod_forum_external::add_discussion_post($discussion1->firstpost, 'some subject 1', 'some text here 1...');
+
+        $posts = mod_forum_external::get_forum_discussion_posts($discussion1->id);
+        $posts = external_api::clean_returnvalue(mod_forum_external::get_forum_discussion_posts_returns(), $posts);
+        // We receive the discussion and the post.
+        $this->assertEquals(3, count($posts['posts']));
+        // The user should still be subscribed to the discussion after adding a discussion post.
+        $this->assertTrue(\mod_forum\subscriptions::is_subscribed($user->id, $forum, $discussion1->id, $cm));
+
+        $this->assertFalse(\mod_forum\subscriptions::is_subscribed($user->id, $forum, $discussion2->id, $cm));
+        // Add a discussion post in a forum discussion where the user is not subscribed (auto-subscribe preference disabled).
+        mod_forum_external::add_discussion_post($discussion2->firstpost, 'some subject 2', 'some text here 2...');
+
+        $posts = mod_forum_external::get_forum_discussion_posts($discussion2->id);
+        $posts = external_api::clean_returnvalue(mod_forum_external::get_forum_discussion_posts_returns(), $posts);
+        // We receive the discussion and the post.
+        $this->assertEquals(2, count($posts['posts']));
+        // The user should still not be subscribed to the discussion after adding a discussion post.
+        $this->assertFalse(\mod_forum\subscriptions::is_subscribed($user->id, $forum, $discussion2->id, $cm));
+
+        // Passing a value for the discussionsubscribe option parameter.
+        $this->assertFalse(\mod_forum\subscriptions::is_subscribed($user->id, $forum, $discussion2->id, $cm));
+        // Add a discussion post in a forum discussion where the user is not subscribed (auto-subscribe preference disabled),
+        // and the option parameter 'discussionsubscribe' => true in the webservice.
+        $option = array('name' => 'discussionsubscribe', 'value' => true);
+        $options[] = $option;
+        mod_forum_external::add_discussion_post($discussion2->firstpost, 'some subject 2', 'some text here 2...',
+            $options);
+
+        $posts = mod_forum_external::get_forum_discussion_posts($discussion2->id);
+        $posts = external_api::clean_returnvalue(mod_forum_external::get_forum_discussion_posts_returns(), $posts);
+        // We receive the discussion and the post.
+        $this->assertEquals(3, count($posts['posts']));
+        // The user should now be subscribed to the discussion after adding a discussion post.
+        $this->assertTrue(\mod_forum\subscriptions::is_subscribed($user->id, $forum, $discussion2->id, $cm));
+    }
+
     /*
      * Test add_discussion. A basic test since all the API functions are already covered by unit tests.
      */
@@ -2267,5 +2353,131 @@ class mod_forum_external_testcase extends externallib_advanced_testcase {
                     'value' => false,
                 ],
             ]);
+    }
+
+    /**
+     * Test trusted text enabled.
+     */
+    public function test_trusted_text_enabled() {
+        global $USER, $CFG;
+
+        $this->resetAfterTest(true);
+        $CFG->enabletrusttext = 1;
+
+        $dangeroustext = '<button>Untrusted text</button>';
+        $cleantext = 'Untrusted text';
+
+        // Create courses to add the modules.
+        $course = self::getDataGenerator()->create_course();
+        $user1 = self::getDataGenerator()->create_user();
+
+        // First forum with tracking off.
+        $record = new stdClass();
+        $record->course = $course->id;
+        $record->type = 'qanda';
+        $forum = self::getDataGenerator()->create_module('forum', $record);
+        $context = context_module::instance($forum->cmid);
+
+        // Add discussions to the forums.
+        $discussionrecord = new stdClass();
+        $discussionrecord->course = $course->id;
+        $discussionrecord->userid = $user1->id;
+        $discussionrecord->forum = $forum->id;
+        $discussionrecord->message = $dangeroustext;
+        $discussionrecord->messagetrust  = trusttext_trusted($context);
+        $discussion1 = self::getDataGenerator()->get_plugin_generator('mod_forum')->create_discussion($discussionrecord);
+
+        self::setAdminUser();
+        $discussionrecord->userid = $USER->id;
+        $discussionrecord->messagetrust  = trusttext_trusted($context);
+        $discussion2 = self::getDataGenerator()->get_plugin_generator('mod_forum')->create_discussion($discussionrecord);
+
+        $discussions = mod_forum_external::get_forum_discussions_paginated($forum->id);
+        $discussions = external_api::clean_returnvalue(mod_forum_external::get_forum_discussions_paginated_returns(), $discussions);
+
+        $this->assertCount(2, $discussions['discussions']);
+        $this->assertCount(0, $discussions['warnings']);
+        // Admin message is fully trusted.
+        $this->assertEquals(1, $discussions['discussions'][0]['messagetrust']);
+        $this->assertEquals($dangeroustext, $discussions['discussions'][0]['message']);
+        // Student message is not trusted.
+        $this->assertEquals(0, $discussions['discussions'][1]['messagetrust']);
+        $this->assertEquals($cleantext, $discussions['discussions'][1]['message']);
+
+        // Get posts now.
+        $posts = mod_forum_external::get_forum_discussion_posts($discussion2->id);
+        $posts = external_api::clean_returnvalue(mod_forum_external::get_forum_discussion_posts_returns(), $posts);
+        // Admin message is fully trusted.
+        $this->assertEquals(1, $posts['posts'][0]['messagetrust']);
+        $this->assertEquals($dangeroustext, $posts['posts'][0]['message']);
+
+        $posts = mod_forum_external::get_forum_discussion_posts($discussion1->id);
+        $posts = external_api::clean_returnvalue(mod_forum_external::get_forum_discussion_posts_returns(), $posts);
+        // Student message is not trusted.
+        $this->assertEquals(0, $posts['posts'][0]['messagetrust']);
+        $this->assertEquals($cleantext, $posts['posts'][0]['message']);
+    }
+
+    /**
+     * Test trusted text disabled.
+     */
+    public function test_trusted_text_disabled() {
+        global $USER, $CFG;
+
+        $this->resetAfterTest(true);
+        $CFG->enabletrusttext = 0;
+
+        $dangeroustext = '<button>Untrusted text</button>';
+        $cleantext = 'Untrusted text';
+
+        // Create courses to add the modules.
+        $course = self::getDataGenerator()->create_course();
+        $user1 = self::getDataGenerator()->create_user();
+
+        // First forum with tracking off.
+        $record = new stdClass();
+        $record->course = $course->id;
+        $record->type = 'qanda';
+        $forum = self::getDataGenerator()->create_module('forum', $record);
+        $context = context_module::instance($forum->cmid);
+
+        // Add discussions to the forums.
+        $discussionrecord = new stdClass();
+        $discussionrecord->course = $course->id;
+        $discussionrecord->userid = $user1->id;
+        $discussionrecord->forum = $forum->id;
+        $discussionrecord->message = $dangeroustext;
+        $discussionrecord->messagetrust  = trusttext_trusted($context);
+        $discussion1 = self::getDataGenerator()->get_plugin_generator('mod_forum')->create_discussion($discussionrecord);
+
+        self::setAdminUser();
+        $discussionrecord->userid = $USER->id;
+        $discussionrecord->messagetrust  = trusttext_trusted($context);
+        $discussion2 = self::getDataGenerator()->get_plugin_generator('mod_forum')->create_discussion($discussionrecord);
+
+        $discussions = mod_forum_external::get_forum_discussions($forum->id);
+        $discussions = external_api::clean_returnvalue(mod_forum_external::get_forum_discussions_returns(), $discussions);
+
+        $this->assertCount(2, $discussions['discussions']);
+        $this->assertCount(0, $discussions['warnings']);
+        // Admin message is not trusted because enabletrusttext is disabled.
+        $this->assertEquals(0, $discussions['discussions'][0]['messagetrust']);
+        $this->assertEquals($cleantext, $discussions['discussions'][0]['message']);
+        // Student message is not trusted.
+        $this->assertEquals(0, $discussions['discussions'][1]['messagetrust']);
+        $this->assertEquals($cleantext, $discussions['discussions'][1]['message']);
+
+        // Get posts now.
+        $posts = mod_forum_external::get_forum_discussion_posts($discussion2->id);
+        $posts = external_api::clean_returnvalue(mod_forum_external::get_forum_discussion_posts_returns(), $posts);
+        // Admin message is not trusted because enabletrusttext is disabled.
+        $this->assertEquals(0, $posts['posts'][0]['messagetrust']);
+        $this->assertEquals($cleantext, $posts['posts'][0]['message']);
+
+        $posts = mod_forum_external::get_forum_discussion_posts($discussion1->id);
+        $posts = external_api::clean_returnvalue(mod_forum_external::get_forum_discussion_posts_returns(), $posts);
+        // Student message is not trusted.
+        $this->assertEquals(0, $posts['posts'][0]['messagetrust']);
+        $this->assertEquals($cleantext, $posts['posts'][0]['message']);
     }
 }

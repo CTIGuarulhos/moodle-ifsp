@@ -10,9 +10,7 @@
  *  Font Awesome 4.7.0 by @davegandy - http://fontawesome.io - @fontawesome
  *  License - http://fontawesome.io/license (Font: SIL OFL 1.1, CSS: MIT License)
  */
-.fa, .block_settings .block_tree [aria-expanded="true"]:before,
-.block_navigation .block_tree [aria-expanded="true"]:before, .block_settings .block_tree [aria-expanded="false"]:before,
-.block_navigation .block_tree [aria-expanded="false"]:before {
+.fa {
   display: inline-block;
   font: normal normal normal 14px/1 FontAwesome;
   font-size: inherit;
@@ -69,14 +67,10 @@
 .fa-pull-right {
   float: right; }
 
-.fa.fa-pull-left, .block_settings .block_tree .fa-pull-left[aria-expanded="true"]:before,
-.block_navigation .block_tree .fa-pull-left[aria-expanded="true"]:before, .block_settings .block_tree .fa-pull-left[aria-expanded="false"]:before,
-.block_navigation .block_tree .fa-pull-left[aria-expanded="false"]:before {
+.fa.fa-pull-left {
   margin-right: .3em; }
 
-.fa.fa-pull-right, .block_settings .block_tree .fa-pull-right[aria-expanded="true"]:before,
-.block_navigation .block_tree .fa-pull-right[aria-expanded="true"]:before, .block_settings .block_tree .fa-pull-right[aria-expanded="false"]:before,
-.block_navigation .block_tree .fa-pull-right[aria-expanded="false"]:before {
+.fa.fa-pull-right {
   margin-left: .3em; }
 
 /* Deprecated as of 4.4.0 */
@@ -86,14 +80,10 @@
 .pull-left {
   float: left; }
 
-.fa.pull-left, .block_settings .block_tree .pull-left[aria-expanded="true"]:before,
-.block_navigation .block_tree .pull-left[aria-expanded="true"]:before, .block_settings .block_tree .pull-left[aria-expanded="false"]:before,
-.block_navigation .block_tree .pull-left[aria-expanded="false"]:before {
+.fa.pull-left {
   margin-right: .3em; }
 
-.fa.pull-right, .block_settings .block_tree .pull-right[aria-expanded="true"]:before,
-.block_navigation .block_tree .pull-right[aria-expanded="true"]:before, .block_settings .block_tree .pull-right[aria-expanded="false"]:before,
-.block_navigation .block_tree .pull-right[aria-expanded="false"]:before {
+.fa.pull-right {
   margin-left: .3em; }
 
 .fa-spin {
@@ -11638,14 +11628,26 @@ div.editor_atto_toolbar button .icon {
 .block_navigation .block_tree [aria-expanded="true"]:before {
   content: "";
   margin-right: 0;
+  display: inline-block;
+  font: normal normal normal 14px/1 FontAwesome;
+  font-size: inherit;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   font-size: 16px;
   width: 16px; }
 
 .block_settings .block_tree [aria-expanded="false"]:before,
 .block_navigation .block_tree [aria-expanded="false"]:before {
   content: "";
-  font-size: 16px;
   margin-right: 0;
+  display: inline-block;
+  font: normal normal normal 14px/1 FontAwesome;
+  font-size: inherit;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-size: 16px;
   width: 16px; }
 
 .dir-rtl .block_settings .block_tree [aria-expanded="false"]:before,
@@ -12409,7 +12411,8 @@ span.editinstructions {
   padding: 0;
   margin: 0; }
 
-.coursebox .moreinfo {
+.coursebox .moreinfo,
+.coursebox .enrolmenticons {
   padding: 3px 0;
   float: right; }
 
@@ -12811,6 +12814,13 @@ span.editinstructions {
   height: 32px;
   font-size: 32px; }
 
+.activity-navigation .row {
+  align-items: center; }
+
+.activity-navigation #prev-activity-link,
+.activity-navigation #next-activity-link {
+  white-space: pre-wrap; }
+
 /* Anchor link offset fix. This makes hash links scroll 60px down to account for the fixed header. */
 :target::before {
   content: " ";
@@ -12828,9 +12838,6 @@ span.editinstructions {
 
 #nav-drawer.closed {
   left: -305px; }
-
-#page {
-  margin-top: 50px; }
 
 /* Use a variable for the drawer background colors. */
 [data-region="drawer"] {
@@ -14393,7 +14400,13 @@ body.path-question-type {
   padding-left: 0; }
 
 #page-mod-quiz-edit ul.slots .activityinstance img.activityicon {
-  margin-left: 0; }
+  margin-left: 0;
+  width: 16px;
+  height: 16px;
+  padding-right: 4px; }
+
+#page-mod-quiz-edit .activity img.activityicon {
+  vertical-align: text-top; }
 
 #page-mod-quiz-edit .box.generalbox.questionbank {
   padding: 0.5em; }
@@ -14517,6 +14530,9 @@ body.path-question-type {
 .questionbankwindow .module {
   width: auto; }
 
+.questionbankwindow .form-autocomplete-selection {
+  margin-left: 0; }
+
 #page-mod-quiz-edit div.editq div.question div.content {
   background-color: #fff;
   border: 1px solid #ddd;
@@ -14524,7 +14540,8 @@ body.path-question-type {
   overflow: hidden; }
 
 #page-mod-quiz-edit ul.slots .activityinstance img.activityicon {
-  margin-top: 0; }
+  margin-top: 0;
+  padding-right: 4px; }
 
 .path-mod-quiz .statedetails {
   display: block;
@@ -15075,8 +15092,12 @@ fieldset.coursesearchbox label {
   margin: 0.25rem;
   min-height: 2.375rem; }
 
-.form-autocomplete-multiple [role=listitem] {
-  cursor: pointer; }
+.form-autocomplete-selection [role=listitem] {
+  cursor: pointer;
+  white-space: inherit;
+  word-break: break-word;
+  line-height: 1.4;
+  text-align: left; }
 
 .form-autocomplete-suggestions {
   position: absolute;
@@ -15108,9 +15129,8 @@ fieldset.coursesearchbox label {
 
 .form-autocomplete-downarrow {
   color: #373a3c;
-  position: relative;
-  top: 0.2em;
-  left: -1.5em;
+  top: 0.2rem;
+  right: 0.5rem;
   cursor: pointer; }
   .form-autocomplete-downarrow .loading-icon {
     position: absolute;
@@ -15663,10 +15683,6 @@ div#dock {
 .path-mod-assign [data-region="grade-panel"] fieldset,
 .path-mod-assign [data-region="grade-panel"] .fitem.row {
   margin: 0; }
-
-.path-mod-assign [data-region="grade-panel"] .fitem > .col-md-3 > .pull-xs-right {
-  float: none !important;
-  /* stylelint-disable-line declaration-no-important */ }
 
 .path-mod-assign [data-region="grade-panel"] .mform .fitem.has-popout .felement {
   width: 100%; }

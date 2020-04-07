@@ -1,0 +1,8 @@
+#page-report-tutors-index td.numviews {text-align:center;}
+#page-report-tutors-index tr.section {text-align: center;}
+#page-report-tutors-index td.lastaccess {font-size: 0.8em;}
+
+#page-report-tutors-user .section .content {margin-left: 30px;margin-right: 30px;}
+#page-report-tutors-user .section h2 {margin-top: 0;}
+#page-report-tutors-user .section {margin-left: 30px;margin-right: 30px;margin-bottom: 20px;}
+#page-report-tutors-user .section {border-width:1px;border-style:solid;padding:10px;}

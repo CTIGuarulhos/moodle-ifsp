@@ -1,0 +1,9 @@
+body, td{
+	font-family: Tahoma, Verdana;
+	font-size: 10pt;
+}
+#title-course{
+	padding-top: 20px;
+	font-size: 16pt;
+	font-weight: bold;
+}

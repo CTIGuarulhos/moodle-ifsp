@@ -254,39 +254,11 @@ abstract class format_section_renderer_base extends plugin_renderer_base {
     }
 
     /**
-     * Generate the edit controls of a section
-     *
-     * @param stdClass $course The course entry from DB
-     * @param stdClass $section The course_section entry from DB
-     * @param bool $onsectionpage true if being printed on a section page
-     * @return array of links with edit controls
-     * @deprecated since Moodle 3.0 MDL-48947 - please do not use this function any more.
-     * @see format_section_renderer_base::section_edit_control_items()
+     * @deprecated since Moodle 3.0 MDL-48947 - Use format_section_renderer_base::section_edit_control_items() instead
      */
-    protected function section_edit_controls($course, $section, $onsectionpage = false) {
-        global $PAGE;
-
-        if (!$PAGE->user_is_editing()) {
-            return array();
-        }
-
-        $controls = array();
-        $items = $this->section_edit_control_items($course, $section, $onsectionpage);
-
-        foreach ($items as $key => $item) {
-                $url = empty($item['url']) ? '' : $item['url'];
-                $icon = empty($item['icon']) ? '' : $item['icon'];
-                $name = empty($item['name']) ? '' : $item['name'];
-                $attr = empty($item['attr']) ? '' : $item['attr'];
-                $class = empty($item['pixattr']['class']) ? '' : $item['pixattr']['class'];
-                $alt = empty($item['pixattr']['alt']) ? '' : $item['pixattr']['alt'];
-                $controls[$key] = html_writer::link(
-                    new moodle_url($url), $this->output->pix_icon($icon, $alt),
-                    $attr);
-        }
-
-        debugging('section_edit_controls() is deprecated, please use section_edit_control_items() instead.', DEBUG_DEVELOPER);
-        return $controls;
+    protected function section_edit_controls() {
+        throw new coding_exception('section_edit_controls() can not be used anymore. Please use ' .
+            'section_edit_control_items() instead.');
     }
 
     /**
@@ -488,11 +460,6 @@ abstract class format_section_renderer_base extends plugin_renderer_base {
         foreach ($modinfo->sections[$section->section] as $cmid) {
             $thismod = $modinfo->cms[$cmid];
 
-            if ($thismod->modname == 'label') {
-                // Labels are special (not interesting for students)!
-                continue;
-            }
-
             if ($thismod->uservisible) {
                 if (isset($sectionmods[$thismod->modname])) {
                     $sectionmods[$thismod->modname]['name'] = $thismod->modplural;
@@ -519,7 +486,7 @@ abstract class format_section_renderer_base extends plugin_renderer_base {
 
         // Output section activities summary:
         $o = '';
-        $o.= html_writer::start_tag('div', array('class' => 'section-summary-activities mdl-right'));
+        $o.= html_writer::start_tag('div', array('class' => 'section-summary-activities pr-2 mdl-right'));
         foreach ($sectionmods as $mod) {
             $o.= html_writer::start_tag('span', array('class' => 'activity-count'));
             $o.= $mod['name'].': '.$mod['count'];
@@ -533,7 +500,7 @@ abstract class format_section_renderer_base extends plugin_renderer_base {
             $a->complete = $complete;
             $a->total = $total;
 
-            $o.= html_writer::start_tag('div', array('class' => 'section-summary-activities mdl-right'));
+            $o.= html_writer::start_tag('div', array('class' => 'section-summary-activities pr-2 mdl-right'));
             $o.= html_writer::tag('span', get_string('progresstotal', 'completion', $a), array('class' => 'activity-count'));
             $o.= html_writer::end_tag('div');
         }
@@ -1011,7 +978,7 @@ abstract class format_section_renderer_base extends plugin_renderer_base {
             $icon = $this->output->pix_icon('t/add', '');
             $newsections = $maxsections - $lastsection;
             echo html_writer::link($url, $icon . $straddsections,
-                array('class' => 'add-sections', 'data-add-sections' => $straddsections, 'new-sections' => $newsections));
+                array('class' => 'add-sections', 'data-add-sections' => $straddsections, 'data-new-sections' => $newsections));
             echo html_writer::end_tag('div');
         }
     }

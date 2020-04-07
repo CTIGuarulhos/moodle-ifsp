@@ -1,0 +1,8 @@
+#page-report-students-index td.numviews {text-align:center;}
+#page-report-students-index tr.section {text-align: center;}
+#page-report-students-index td.lastaccess {font-size: 0.8em;}
+
+#page-report-students-user .section .content {margin-left: 30px;margin-right: 30px;}
+#page-report-students-user .section h2 {margin-top: 0;}
+#page-report-students-user .section {margin-left: 30px;margin-right: 30px;margin-bottom: 20px;}
+#page-report-students-user .section {border-width:1px;border-style:solid;padding:10px;}

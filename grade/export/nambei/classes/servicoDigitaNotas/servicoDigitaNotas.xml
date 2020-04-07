@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions targetNamespace="http://model.ifsp.edu.br" xmlns:soapenc12="http://www.w3.org/2003/05/soap-encoding" xmlns:tns="http://model.ifsp.edu.br" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap11="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soapenc11="http://schemas.xmlsoap.org/soap/encoding/" xmlns:soap12="http://www.w3.org/2003/05/soap-envelope">
+  <wsdl:types>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://model.ifsp.edu.br">
+<xsd:element name="campus" type="xsd:string"/>
+<xsd:complexType name="NotaAlunoWSList">
+<xsd:sequence>
+<xsd:element minOccurs="0" name="notas" nillable="true" type="tns:ArrayOfNotaAlunoWS"/>
+</xsd:sequence>
+</xsd:complexType>
+<xsd:complexType name="ArrayOfNotaAlunoWS">
+<xsd:sequence>
+<xsd:element maxOccurs="unbounded" minOccurs="0" name="NotaAlunoWS" nillable="true" type="tns:NotaAlunoWS"/>
+</xsd:sequence>
+</xsd:complexType>
+<xsd:complexType name="NotaAlunoWS">
+<xsd:sequence>
+<xsd:element minOccurs="0" name="ano" nillable="true" type="xsd:int"/>
+<xsd:element minOccurs="0" name="bimestre" nillable="true" type="xsd:string"/>
+<xsd:element minOccurs="0" name="campus" nillable="true" type="xsd:string"/>
+<xsd:element minOccurs="0" name="codigoDisciplina" nillable="true" type="xsd:string"/>
+<xsd:element minOccurs="0" name="dataGravacao" nillable="true" type="xsd:string"/>
+<xsd:element minOccurs="0" name="eventoTod" nillable="true" type="xsd:int"/>
+<xsd:element minOccurs="0" name="falta" nillable="true" type="xsd:int"/>
+<xsd:element minOccurs="0" name="flagDigitacaoNota" nillable="true" type="xsd:string"/>
+<xsd:element minOccurs="0" name="nota" nillable="true" type="xsd:float"/>
+<xsd:element minOccurs="0" name="prontuarioAluno" nillable="true" type="xsd:string"/>
+<xsd:element minOccurs="0" name="prontuarioUsuario" nillable="true" type="xsd:string"/>
+<xsd:element minOccurs="0" name="semestre" nillable="true" type="xsd:string"/>
+<xsd:element minOccurs="0" name="turma" nillable="true" type="xsd:int"/>
+</xsd:sequence>
+</xsd:complexType>
+<xsd:element name="listaNotas" type="tns:NotaAlunoWSList"/>
+<xsd:complexType name="ResultSearchDigitacao">
+<xsd:sequence>
+<xsd:element minOccurs="0" name="motivo" nillable="true" type="xsd:string"/>
+<xsd:element minOccurs="0" name="sucesso" type="xsd:boolean"/>
+</xsd:sequence>
+</xsd:complexType>
+<xsd:element name="resultadoDigitacao" type="tns:ResultSearchDigitacao"/>
+</xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="digitarNotasAlunosResponse">
+    <wsdl:part name="resultadoDigitacao" element="tns:resultadoDigitacao">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="digitarNotasAlunosRequest">
+    <wsdl:part name="campus" element="tns:campus">
+    </wsdl:part>
+    <wsdl:part name="listaNotas" element="tns:listaNotas">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:portType name="servicoDigitaNotas">
+    <wsdl:operation name="digitarNotasAlunos">
+      <wsdl:input name="digitarNotasAlunosRequest" message="tns:digitarNotasAlunosRequest">
+    </wsdl:input>
+      <wsdl:output name="digitarNotasAlunosResponse" message="tns:digitarNotasAlunosResponse">
+    </wsdl:output>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="servicoDigitaNotasHttpBinding" type="tns:servicoDigitaNotas">
+    <wsdlsoap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="digitarNotasAlunos">
+      <wsdlsoap:operation soapAction="urn:DigitarNotasAlunos"/>
+      <wsdl:input name="digitarNotasAlunosRequest">
+        <wsdlsoap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="digitarNotasAlunosResponse">
+        <wsdlsoap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="servicoDigitaNotas">
+    <wsdl:port name="servicoDigitaNotasHttpPort" binding="tns:servicoDigitaNotasHttpBinding">
+      <wsdlsoap:address location="http://localhost/services/servicoDigitaNotas"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>
